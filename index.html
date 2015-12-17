@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+  <title>Time Counter</title>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <link href='css/style.css' rel='stylesheet' type='text/css'>
+
+  </head>
+  <body ng-app="timerApp">
+      <div class="container" ng-controller="timerController">
+          <div id="timer">
+              <label>{{timeStatus | timerFilter }}</label>
+          </div>
+
+          <div class="buttons">
+             <button ng-click="startTimer()" id="start" autofocus>Start</button>
+             <button ng-click="stopTimer()" id="stop">Stop</button>
+             <button ng-click="resetTimer()" id="reset">Reset</button>
+             <button ng-click="lapTimer()" id="lap">Lap</button>
+          </div>
+
+          <div id="laplist">
+            <div ng-repeat="lap in laps" class="laptime">
+              <span> {{lap | timerFilter}} </span>
+            </div>
+          </div>
+
+          <div>=======================================</div>
+          <div id="total">
+            <span>{{getTotal()}} </span>
+          </div>
+
+      </div>
+        <script src="js/angular.js"></script>
+        <script src="js/app.js"></script>
+  </body>
+
+</html>
+
