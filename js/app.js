@@ -7,42 +7,62 @@ app.controller("timerController", ["$scope", "$interval", function($scope, $inte
  $scope.timeStatus = 0;
  $scope.startTime = 0;
  $scope.lapTime = 0;
+ $scope.pausedTime = 0;
  $scope.laps =[];
+ $scope.running = false;
+ $scope.paused = false;
    
    
    $scope.startTimer = function() {
-    $scope.startTime = $scope.timeStatus;
-    
-    
+  
     if($scope.timeRun){
       $interval.cancel($scope.timeRun);
+      $scope.running = true;
     }
 
     $scope.timeUpdate = function(){
         $scope.timeStatus++;
     }
-    $scope.timeRun = $interval($scope.timeUpdate,10);
-  }
 
+    if(!$scope.paused){
+	    $scope.startTime = $scope.timeStatus;
+
+	    }else{
+	    	$scope.stratTime = $scope.timeStatus - $scope.pausedTime;
+	    	$scope.paused = false;
+	    	$scope.running = true;
+	    }
+
+    $scope.timeRun = $interval($scope.timeUpdate,10);
+    
+  }
 
   $scope.stopTimer = function(){
   	if($scope.timeRun){
-  		$interval.cancel($scope.timeRun);
-  		$scope.startTime = $scope.timeStatus;
+  	$interval.cancel($scope.timeRun);
+  		
   	}
-  	
+  	$scope.pausedTime = $scope.timeStatus - $scope.startTime;
+  	$scope.running = false;
+  	$scope.paused = true;
   	console.log($scope.timeStatus /100);
-  	$scope.result = $scope.timeStatus;
+  	
   }
   
   $scope.resetTimer = function(){
+  	if($scope.timeRun){
+      $interval.cancel($scope.timeRun);
+    }
+    $scope.paused = false;
+    $scope.running = false;
     $scope.timeStatus = 0;
     $scope.laps = [];
-    $interval.cancel($scope.timeRun);
+    
   }
 
   $scope.lapTimer = function(){
   	//console.log("Start Time 0: " + $scope.startTime);
+  	if($scope.running){
   	
   	$scope.lapTime = $scope.timeStatus - $scope.startTime;
   	//console.log("Status Time : " + $scope.timeStatus);
@@ -53,7 +73,7 @@ app.controller("timerController", ["$scope", "$interval", function($scope, $inte
   	
   	$scope.laps.push($scope.lapTime);
   	//console.log("=========================");
-  	
+  	}
   }
 
   $scope.getTotal = function(){
@@ -75,16 +95,17 @@ app.filter('timerFilter', function () {
 	
   return function (time) {
 
-  	var ms = time ;
-  	var seconds = Math.floor(ms / 100) % 60;
-  	var minutes = Math.floor(ms / 6000);
-  	var hours = Math.floor(ms / 360000) ;
+  	var ms      = Math.floor(time) % 100;
+  	var seconds = Math.floor(time / 100) % 60;
+  	var minutes = Math.floor(time / 6000) % 60;
+  	var hours   = Math.floor(time / 360000) ;
    
     if (hours   < 10) {hours   = "0"+hours;}
     if (minutes < 10) {minutes = "0"+minutes;}
     if (seconds < 10) {seconds = "0"+seconds;}
+    if (ms      < 10) {ms      = "0"+ms;}
     
-    return hours+':'+minutes+':'+seconds+':'+(ms%100);
+    return hours +':'+ minutes +':'+ seconds +':'+ ms;
     
   }
 });
